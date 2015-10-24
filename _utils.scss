@@ -1,0 +1,251 @@
+@charset "utf-8";
+
+/**
+ * sass 工具箱 v1.0
+ */
+
+// 清除(闭合)浮动 http://www.iyunlu.com/view/css-xhtml/55.html
+@mixin clearfix () { 
+    zoom: 1;
+
+    &:before, 
+    &:after {
+      	display: table; 
+        content: "";
+
+        /*
+         * Fixes Opera/contenteditable bug:
+         * http://nicolasgallagher.com/micro-clearfix-hack/#comment-36952
+         */
+        line-height: 0;
+    }
+
+    &:after {clear: both;}
+}
+
+// 行内块 http://www.iyunlu.com/view/css-xhtml/64.html
+@mixin inline-block () { 
+    // 如果有必要可在其父元素上应用样式 vertical-align: top; 
+    display: inline-block; 
+    *display: inline; 
+    *zoom: 1;
+} 
+
+
+
+/*
+ * 文字处理
+ */
+
+// 文字隐藏 http://prezi.com/t8yyirefxn2u/text-indent-9999px/
+@mixin t-hide () {
+    text-indent: 100%; 
+    white-space: nowrap; 
+    overflow: hidden;
+}
+
+// 文字省略 (需要用在与文字最近的一个 block|inline-block 的祖先元素上，另外在ie6中该祖先元素的width需要显性的声明且不能为auto,可以设置为 100% )
+@mixin t-ellipsis () {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+// 文字(强制)折行 http://ued.taobao.org/blog/2010/10/research-of-word-wrap/
+@mixin t-break () {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+// 自定义字体
+@mixin font-face($path, $fontName){
+    @font-face {
+        font-family: $fontName;
+        src: url('#{$path}/#{$fontName}.eot');
+        src: url('#{$path}/#{$fontName}.eot?#iefix') format('embedded-opentype'),
+             url('#{$path}/#{$fontName}.woff') format('woff'),
+             url('#{$path}/#{$fontName}.ttf') format('truetype'),
+             url('#{$path}/#{$fontName}.svg#svgFontName') format('svg');
+    }
+}
+
+// (整体)透明
+@mixin opacity ($a: 0.3) {
+    $aa: $a * 100; 
+    opacity: $a;
+    filter: Alpha(Opacity=#{$aa}); /* ie5-8 */
+    zoom: 1; /* 应用滤镜的元素必须拥有layout */
+}
+
+// 背景透明
+@mixin background-rgba ($r: 0, $g: 0, $b: 0, $a: 0.3) {
+    $val: rgba($r, $g, $b, $a);
+    $_val: ie-hex-str($val);
+
+    background-color: $val;
+    filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr="#{$_val}",EndColorStr="#{$_val}");
+    zoom: 1;
+}
+
+// 渐变
+@mixin linear-gradient ($start: #ffa600, $end: #fe9200) {
+    filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr="#{$start}", endColorstr="#{$end}");
+    background-image: -webkit-linear-gradient(top, $start, $end);
+    background-image: -moz-linear-gradient(top, $start, $end);
+    background-image: -ms-linear-gradient(top,$start  0,$end 100%);
+    background-image: -o-linear-gradient(top, $start, $end);
+    background-image: linear-gradient(top, $start, $end);
+}
+
+// 禁用渐变
+@mixin linear-gradientDisable () {
+    background-image: none;
+　　filter: progid:DXImageTransform.Microsoft.gradient(enabled=false); /* 禁用渐变 */
+}
+
+// 利用边框制作小三角
+@mixin triangle ($direction:bottom, $x:10px, $y:$x, $color:#999) {
+    display: inline-block;
+    width: 0; 
+    height: 0; 
+    overflow:hidden;
+
+    $normal: $x dashed transparent; // dashed可以解决解决IE6不支持transparent的问题 
+    $special: $y solid $color;
+
+    @if $direction == bottom {
+      border-top: $special;
+      border-left: $normal;
+      border-right: $normal;
+    } 
+    @else if $direction == top {
+      border-bottom: $special;
+      border-left: $normal;
+      border-right: $normal;
+    } 
+    @else if $direction == left {
+      border-right: $special;
+      border-top: $normal;
+      border-bottom: $normal;
+    } 
+    @else {
+      border-left: $special;
+      border-top: $normal;
+      border-bottom: $normal;
+    }
+}
+
+// 去色(不兼容低版本Safari、Opera和某些firefox), 一般用于哀悼日)
+@mixin grayscale() { 
+    -webkit-filter: grayscale(100%);   
+    -webkit-filter: grayscale(1); /* Chrome 19+ & Safari 6+ */
+       -moz-filter: grayscale(100%); 
+        -ms-filter: grayscale(100%); 
+         -o-filter: grayscale(100%); 
+            filter: grayscale(100%);
+
+            /* firefox 3.5+，慎用！存在性能问题 */ 
+            filter: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale');     
+
+            filter: gray; /* IE6~9 */ 
+} 
+
+// logo引入 最佳实践: http://www.iyunlu.com/view/css-xhtml/62.html
+@mixin logo ($w, $h, $url) {
+    display: block;
+    width: $w; height: $h; 
+    *height: 0; *padding-top: $h; *background: url($url);
+    overflow: hidden;
+
+    &:before {content: url($url)}
+}
+
+@mixin min-height($h) {
+    /* 
+     * clientHeight = height + padding;
+     * offsetHeight = height + padding+border;
+     */
+    min-height: $h;
+    height: auto !important; /* all browsers except ie6 will respect the !important flag */
+    height: $h; /* Should have the same value as the min height above */
+}
+
+@mixin clip ($t:0px, $r:0px, $b:0px, $l:0px) {
+    position:absolute;    /* 矩形剪裁只能作用于 position:absolute|fixed 的元素上 */
+    clip: rect;
+    clip: rect($t $r $b $l);    /* IE6, IE7 */
+    clip: rect($t, $r, $b, $l);
+}
+
+// 解决Retina屏幕下的图像显示
+@mixin retina-image($file_1x, $file_2x, $width_1x, $height_1x) {
+    background-image: url("#{$file_1x}");
+
+    @media
+    only screen and (-webkit-min-device-pixel-ratio: 2),
+    only screen and (   -moz-min-device-pixel-ratio: 2),
+    only screen and (     -o-min-device-pixel-ratio: 2/1),
+    only screen and (        min-device-pixel-ratio: 2),
+    only screen and (                min-resolution: 192dpi),
+    only screen and (                min-resolution: 2dppx) {
+        background-image: url("#{$file_2x}");
+        background-size: $width_1x $height_1x;
+    }
+}
+
+@mixin image-set ($a1, $a2) {    
+    /* 
+     * 解决Retina屏幕下的图像显示，淘宝首页的css sprite解决方案
+     * image-set是CSS4的属性，"safari6"和“chrome21”支持
+     * 如果浏览器支持image-set，普通显屏，此时浏览器会选择image-set中的@1x背景图像; Retina屏幕，此时浏览器会选择image-set中的@2x背景图像;
+     * 扩展阅读：http://www.w3cplus.com/css/safari-6-and-chrome-21-add-image-set-to-support-retina-images.html
+     */
+    background: url($a1);
+    background-image: -webkit-image-set(url($a1) 1x, url($a2) 2x);
+    background-image: -moz-image-set(url($a1) 1x,url($a2) 2x);
+    background-image: -ms-image-set(url($a1) 1x,url($a2) 2x);
+    background-image: -o-image-set(url($a1) 1x,url($a2) 2x);
+    background-repeat: no-repeat;
+}
+
+// “完全居中”: http://codepen.io/shshaw/full/gEiDt
+@mixin absolute-center() {
+  /*
+   * 1.必须声明元素[max-]height和[max-]width
+   * 2.Chrome, Firefox, Safari, Mobile Safari, IE8+; 不支持Windows Phone
+   */
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}
+
+// 图片水平垂直居中 http://blog.moocss.com/code-snippets/html-css-code-snippets/1390.html
+@mixin image-center($width, $height: $width){
+    $fontsize: $height * 0.873;
+
+    width: $width;
+    height: $height;
+    overflow: hidden;
+
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    
+    *display: block;    //IE hack
+    *font: #{$fontsize}/1em Arial;
+    
+    img{
+        display: inline;
+        max-height: 100%;
+        max-width: 100%;
+        vertical-align: middle;
+    }
+}
+
+@mixin user-select($select: auto) {
+  -webkit-user-select: $select;
+     -moz-user-select: $select;
+      -ms-user-select: $select;
+       -o-user-select: $select;
+          user-select: $select;
+}
