@@ -51,6 +51,17 @@
     overflow: hidden;
 }
 
+// 多行省略 https://juejin.im/entry/587f453e1b69e60058555a5f
+@mixin t-ellipsis () {
+    overflow : hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
 // 文字(强制)折行 http://ued.taobao.org/blog/2010/10/research-of-word-wrap/
 @mixin t-break () {
     word-wrap: break-word;
